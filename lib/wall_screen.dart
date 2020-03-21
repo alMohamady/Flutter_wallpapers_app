@@ -37,6 +37,33 @@ class _WallScreenState extends State<WallScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("My WallPapers"),
+      ),
+      body: wallpapersList != null?
+      new StaggeredGridView.countBuilder(
+           padding: const EdgeInsets.all(8),
+          crossAxisCount: 4,
+          itemBuilder: (context, i) {
+             String imgPath = wallpapersList[i].data['url'];
+             return Material(
+               elevation: 8,
+               borderRadius: BorderRadius.all(Radius.circular(8)),
+               child: InkWell(
+                 child: Hero(
+                   tag: imgPath,
+                   child: FadeInImage(
+                     image: NetworkImage(imgPath),
+                     fit: BoxFit.cover,
+                     placeholder: AssetImage("assets/notfound.png"),
+                   ),
+                 ),
+               ),
+             );
+          },
+          staggeredTileBuilder: (i) => StaggeredTile.count(2, i.isEven? 2 : 3),
+          mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ) : Center (
+        child: CircularProgressIndicator(),
       )
     );
   }
