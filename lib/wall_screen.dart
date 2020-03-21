@@ -3,23 +3,61 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_app_wallpaper/full_screen_image.dart';
 import 'dart:async';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
+
+const String testDevice = "";
 
 class WallScreen extends StatefulWidget {
+
   @override
   _WallScreenState createState() => _WallScreenState();
 }
 
 class _WallScreenState extends State<WallScreen> {
 
+  static final MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+    testDevices: <String> [],
+    keywords: <String> ['wallpapers', 'images', 'backgrounds'],
+    birthday: DateTime.now(),
+    childDirected: true,
+  );
+
+  BannerAd _bannerAd;
+  InterstitialAd _interstitialAd;
+
   StreamSubscription<QuerySnapshot> subscription;
 
   List<DocumentSnapshot> wallpapersList;
   final CollectionReference collectionReference = Firestore.instance.collection("wallpapers");
 
+
+  BannerAd showBannerAd(){
+    return BannerAd(
+      adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.banner,
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("Banner Event : $event");
+      }
+    );
+  }
+
+  InterstitialAd showInterstitialAd(){
+    return InterstitialAd(
+        adUnitId: InterstitialAd.testAdUnitId,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("Interstitial Event : $event");
+        }
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+    _bannerAd = showBannerAd()..load()..show();
     subscription = collectionReference.snapshots().listen((datasnapshot) {
       setState(() {
         wallpapersList = datasnapshot.documents;
@@ -29,6 +67,8 @@ class _WallScreenState extends State<WallScreen> {
 
   @override
   void dispose() {
+    _bannerAd?.dispose();
+    _interstitialAd?.dispose();
     subscription?.cancel();
     super.dispose();
   }
@@ -50,6 +90,7 @@ class _WallScreenState extends State<WallScreen> {
                borderRadius: BorderRadius.all(Radius.circular(8)),
                child: InkWell(
                  onTap: () {
+                   showInterstitialAd()..load()..show();
                    Navigator.push(context, MaterialPageRoute(
                      builder: (context) {
                        return FullScreenImage(imgPath);

@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   cloud_firestore:
   flutter_staggered_grid_view:
+  firebase_admob:
 
 dev_dependencies:
   flutter_test:
