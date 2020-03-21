@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app_wallpaper/full_screen_image.dart';
 import 'dart:async';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -48,6 +49,13 @@ class _WallScreenState extends State<WallScreen> {
                elevation: 8,
                borderRadius: BorderRadius.all(Radius.circular(8)),
                child: InkWell(
+                 onTap: () {
+                   Navigator.push(context, MaterialPageRoute(
+                     builder: (context) {
+                       return FullScreenImage(imgPath);
+                     }
+                   ));
+                 },
                  child: Hero(
                    tag: imgPath,
                    child: FadeInImage(
